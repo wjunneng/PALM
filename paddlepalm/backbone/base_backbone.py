@@ -51,7 +51,7 @@ class Backbone(object):
             对于文本分类和匹配任务，bert backbone的输出内容可能包含如下的对象
                 {"word_emb": ([-1, max_seqlen, word_emb_size], 'float32'),
                  "sentence_emb": ([-1, hidden_size], 'float32'),
-                 "sim_vec": ([-1, hidden_size], 'float32')}""" 
+                 "sim_vec": ([-1, hidden_size], 'float32')}"""
         raise NotImplementedError()
 
     def build(self, inputs):

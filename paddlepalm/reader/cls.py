@@ -35,9 +35,9 @@ class ClassifyReader(Reader):
     CAUTIOUS: The first line of the file must be header! And areas are splited by tab (\\t).
 
     """
-    
-    def __init__(self, vocab_path, max_len, tokenizer='wordpiece', \
-             lang='en', seed=None, do_lower_case=False, phase='train'):
+
+    def __init__(self, vocab_path, max_len, tokenizer='wordpiece', lang='en', seed=None, do_lower_case=False,
+                 phase='train'):
         """Create a new Reader for loading and processing classification task data.
 
         Args:
@@ -66,33 +66,27 @@ class ClassifyReader(Reader):
 
         self._is_training = phase == 'train'
 
-        cls_reader = CLSReader(vocab_path,
-                                max_seq_len=max_len,
-                                do_lower_case=do_lower_case,
-                                for_cn=for_cn,
-                                random_seed=seed)
+        cls_reader = CLSReader(vocab_path, max_seq_len=max_len, do_lower_case=do_lower_case, for_cn=for_cn,
+                               random_seed=seed)
         self._reader = cls_reader
 
         self._phase = phase
         # self._batch_size = 
         # self._print_first_n = config.get('print_first_n', 0)
 
-
     @property
     def outputs_attr(self):
         """The contained output items (input features) of this reader."""
         attrs = {"token_ids": [[-1, -1], 'int64'],
-                "position_ids": [[-1, -1], 'int64'],
-                "segment_ids": [[-1, -1], 'int64'],
-                "input_mask": [[-1, -1, 1], 'float32'],
-                "label_ids": [[-1], 'int64'],
-                "task_ids": [[-1, -1], 'int64']
-                }
+                 "position_ids": [[-1, -1], 'int64'],
+                 "segment_ids": [[-1, -1], 'int64'],
+                 "input_mask": [[-1, -1, 1], 'float32'],
+                 "label_ids": [[-1], 'int64'],
+                 "task_ids": [[-1, -1], 'int64']
+                 }
         return self._get_registed_attrs(attrs)
 
-
-    def load_data(self, input_file, batch_size, num_epochs=None, \
-                  file_format='tsv', shuffle_train=True):
+    def load_data(self, input_file, batch_size, num_epochs=None, file_format='tsv', shuffle_train=True):
         """Load classification data into reader. 
 
         Args:
@@ -105,17 +99,16 @@ class ClassifyReader(Reader):
         """
         self._batch_size = batch_size
         self._num_epochs = num_epochs
-        self._data_generator = self._reader.data_generator( \
-            input_file, batch_size, num_epochs if self._phase == 'train' else 1, \
-            shuffle=shuffle_train if self._phase == 'train' else False, \
-            phase=self._phase)
+        self._data_generator = self._reader.data_generator(input_file,
+                                                           batch_size,
+                                                           num_epochs if self._phase == 'train' else 1,
+                                                           shuffle=shuffle_train if self._phase == 'train' else False,
+                                                           phase=self._phase)
 
-    def _iterator(self): 
-
-        names = ['token_ids', 'segment_ids', 'position_ids', 'task_ids', 'input_mask', 
-            'label_ids', 'unique_ids']
+    def _iterator(self):
+        names = ['token_ids', 'segment_ids', 'position_ids', 'task_ids', 'input_mask', 'label_ids', 'unique_ids']
         for batch in self._data_generator():
-            outputs = {n: i for n,i in zip(names, batch)}
+            outputs = {n: i for n, i in zip(names, batch)}
             ret = {}
             # TODO: move runtime shape check here
             for attr in self.outputs_attr.keys():
@@ -123,8 +116,7 @@ class ClassifyReader(Reader):
             yield ret
 
     def get_epoch_outputs(self):
-        return {'examples': self._reader.get_examples(self._phase),
-                'features': self._reader.get_features(self._phase)}
+        return {'examples': self._reader.get_examples(self._phase), 'features': self._reader.get_features(self._phase)}
 
     @property
     def num_examples(self):
@@ -133,5 +125,3 @@ class ClassifyReader(Reader):
     @property
     def num_epochs(self):
         return self._num_epochs
-
-

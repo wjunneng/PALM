@@ -17,6 +17,7 @@ import os
 import json
 import copy
 
+
 class Head(object):
 
     def __init__(self, phase='train'):
@@ -110,7 +111,7 @@ class Head(object):
     def get_results(self):
         """返回当前任务头积累的处理结果。"""
         return copy.deepcopy(self._results_buffer)
-        
+
     def epoch_postprocess(self, post_inputs=None, output_dir=None):
         """epoch级别的后处理。
 
@@ -126,7 +127,6 @@ class Head(object):
                 os.makedirs(output_dir)
             with open(os.path.join(output_dir, self._phase), 'w') as writer:
                 for i in self._results_buffer:
-                    writer.write(json.dumps(i)+'\n')
+                    writer.write(json.dumps(i) + '\n')
         else:
             return self._results_buffer
-

@@ -25,17 +25,16 @@ class Classify(Head):
     """
     classification
     """
-    def __init__(self, num_classes, input_dim, dropout_prob=0.0, \
-                 param_initializer_range=0.02, phase='train'):
+
+    def __init__(self, num_classes, input_dim, dropout_prob=0.0, param_initializer_range=0.02, phase='train'):
 
         self._is_training = phase == 'train'
         self._hidden_size = input_dim
 
         self.num_classes = num_classes
-    
+
         self._dropout_prob = dropout_prob if phase == 'train' else 0.0
-        self._param_initializer = fluid.initializer.TruncatedNormal(
-            scale=param_initializer_range)
+        self._param_initializer = fluid.initializer.TruncatedNormal(scale=param_initializer_range)
         self._preds = []
         self._probs = []
 
@@ -52,36 +51,28 @@ class Classify(Head):
         if self._is_training:
             return {'loss': [[1], 'float32']}
         else:
-            return {'logits': [[-1, self.num_classes], 'float32'],
-                    'probs': [[-1, self.num_classes], 'float32']}
-            
+            return {'logits': [[-1, self.num_classes], 'float32'], 'probs': [[-1, self.num_classes], 'float32']}
 
     def build(self, inputs, scope_name=''):
         sent_emb = inputs['backbone']['sentence_embedding']
         if self._is_training:
             label_ids = inputs['reader']['label_ids']
-            cls_feats = fluid.layers.dropout(
-                x=sent_emb,
-                dropout_prob=self._dropout_prob,
-                dropout_implementation="upscale_in_train")
+            cls_feats = fluid.layers.dropout(x=sent_emb, dropout_prob=self._dropout_prob,
+                                             dropout_implementation="upscale_in_train")
 
-        logits = fluid.layers.fc(
-            input=sent_emb,
-            size=self.num_classes,
-            param_attr=fluid.ParamAttr(
-                name=scope_name+"cls_out_w",
-                initializer=self._param_initializer),
-            bias_attr=fluid.ParamAttr(
-                name=scope_name+"cls_out_b", initializer=fluid.initializer.Constant(0.)))
+        logits = fluid.layers.fc(input=sent_emb,
+                                 size=self.num_classes,
+                                 param_attr=fluid.ParamAttr(name=scope_name + "cls_out_w",
+                                                            initializer=self._param_initializer),
+                                 bias_attr=fluid.ParamAttr(name=scope_name + "cls_out_b",
+                                                           initializer=fluid.initializer.Constant(0.)))
         probs = fluid.layers.softmax(logits)
         if self._is_training:
-            loss = fluid.layers.cross_entropy(
-                input=probs, label=label_ids)
+            loss = fluid.layers.cross_entropy(input=probs, label=label_ids)
             loss = layers.mean(loss)
             return {"loss": loss}
         else:
-            return {"logits":logits,
-                    "probs":probs}
+            return {"logits": logits, "probs": probs}
 
     def batch_postprocess(self, rt_outputs):
         if not self._is_training:
@@ -89,7 +80,6 @@ class Classify(Head):
             probs = rt_outputs['probs']
             self._preds.extend(logits.tolist())
             self._probs.extend(probs.tolist())
-
 
     def epoch_postprocess(self, post_inputs, output_dir=None):
         # there is no post_inputs needed and not declared in epoch_inputs_attrs, hence no elements exist in post_inputs
@@ -103,8 +93,6 @@ class Classify(Head):
                 with open(os.path.join(output_dir, 'predictions.json'), 'w') as writer:
                     for result in results:
                         result = json.dumps(result)
-                        writer.write(result+'\n')
-                print('Predictions saved at '+os.path.join(output_dir, 'predictions.json'))
+                        writer.write(result + '\n')
+                print('Predictions saved at ' + os.path.join(output_dir, 'predictions.json'))
             return results
-
-                

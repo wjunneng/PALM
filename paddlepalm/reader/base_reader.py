@@ -14,6 +14,8 @@
 # limitations under the License.
 
 from copy import copy
+
+
 class Reader(object):
     """interface of data reader."""
 
@@ -23,7 +25,7 @@ class Reader(object):
         Args:
             phase: str类型。用于区分主干网络被调用时所处的运行阶段，目前支持训练阶段train和预测阶段predict
             """
-        
+
         self._phase = phase
         self._batch_size = None
         self._num_epochs = 1
@@ -33,7 +35,7 @@ class Reader(object):
     @classmethod
     def create_register(self):
         return set()
-        
+
     def clone(self, phase='train'):
         """拷贝一个新的reader对象。"""
         if phase == self._phase:
@@ -50,7 +52,7 @@ class Reader(object):
             attr_name: 需要产出的对象的对象名，例如’segment_ids‘。
             """
         self._register.add(attr_name)
-            
+
     def register_with(self, backbone):
         """根据backbone对输入对象的依赖，在注册器中对每个依赖的输入对象进行注册。
 
@@ -73,8 +75,7 @@ class Reader(object):
             ret[i] = attrs[i]
         return ret
 
-    def load_data(self, input_file, batch_size, num_epochs=None, \
-                  file_format='tsv', shuffle_train=True):
+    def load_data(self, input_file, batch_size, num_epochs=None, file_format='tsv', shuffle_train=True):
         """将磁盘上的数据载入到reader中。
 
         注意：实现该方法时需要同步创建self._batch_size和self._num_epochs。
@@ -103,7 +104,7 @@ class Reader(object):
                  "label": ([-1], 'int')}
         """
         raise NotImplementedError()
-    
+
     def _iterator(self):
         """数据集遍历接口，注意，当数据集遍历到尾部时该接口应自动完成指针重置，即重新从数据集头部开始新的遍历。
         Yield:
