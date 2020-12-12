@@ -20,13 +20,15 @@ import numpy as np
 import os
 import math
 
+
 class SequenceLabel(Head):
-    '''
+    """
     Sequence label
-    '''
-    def __init__(self, num_classes, input_dim, dropout_prob=0.0, learning_rate=1e-3,  \
-                 param_initializer_range=0.02, phase='train'):
-        
+    """
+
+    def __init__(self, num_classes, input_dim, dropout_prob=0.0, learning_rate=1e-3, param_initializer_range=0.02,
+                 phase='train'):
+
         """  
         Args:
             phase: train, eval, pred
@@ -37,14 +39,12 @@ class SequenceLabel(Head):
         self._hidden_size = input_dim
 
         self.num_classes = num_classes
-    
+
         self._dropout_prob = dropout_prob if phase == 'train' else 0.0
-        self._param_initializer = fluid.initializer.TruncatedNormal(
-            scale=param_initializer_range)
+        self._param_initializer = fluid.initializer.TruncatedNormal(scale=param_initializer_range)
 
         self.learning_rate = learning_rate
         self._preds = []
-
 
     @property
     def inputs_attrs(self):
@@ -68,50 +68,47 @@ class SequenceLabel(Head):
             label_ids = inputs['reader']['label_ids']
             seq_lens = inputs['reader']['seq_lens']
 
-        emission = fluid.layers.fc(
-            size=self.num_classes,
-            input=token_emb,
-            param_attr=fluid.ParamAttr(
-                initializer=self._param_initializer,
-                regularizer=fluid.regularizer.L2DecayRegularizer(
-                    regularization_coeff=1e-4)),
-            bias_attr=fluid.ParamAttr(
-                name=scope_name+"cls_out_b", initializer=fluid.initializer.Constant(0.)),
-            num_flatten_dims=2)
+        emission = fluid.layers.fc(size=self.num_classes,
+                                   input=token_emb,
+                                   param_attr=fluid.ParamAttr(initializer=self._param_initializer,
+                                                              regularizer=fluid.regularizer.L2DecayRegularizer(
+                                                                  regularization_coeff=1e-4)),
+                                   bias_attr=fluid.ParamAttr(name=scope_name + "cls_out_b",
+                                                             initializer=fluid.initializer.Constant(0.)),
+                                   num_flatten_dims=2)
 
         if self._is_training:
 
             # compute loss
-            crf_cost = fluid.layers.linear_chain_crf(  
-                input=emission,
-                label=label_ids,
-                param_attr=fluid.ParamAttr(
-                    name=scope_name+'crfw', learning_rate=self.learning_rate),
-                length=seq_lens)
+            crf_cost = fluid.layers.linear_chain_crf(input=emission,
+                                                     label=label_ids,
+                                                     param_attr=fluid.ParamAttr(name=scope_name + 'crfw',
+                                                                                learning_rate=self.learning_rate),
+                                                     length=seq_lens)
 
             avg_cost = fluid.layers.mean(x=crf_cost)
-            crf_decode = fluid.layers.crf_decoding(
-                input=emission,
-                param_attr=fluid.ParamAttr(name=scope_name+'crfw'),
-                length=seq_lens)
+            crf_decode = fluid.layers.crf_decoding(input=emission,
+                                                   param_attr=fluid.ParamAttr(name=scope_name + 'crfw'),
+                                                   length=seq_lens)
 
             (precision, recall, f1_score, num_infer_chunks, num_label_chunks,
-            num_correct_chunks) = fluid.layers.chunk_eval(
-                input=crf_decode,
-                label=label_ids,
-                chunk_scheme="IOB",
-                num_chunk_types=int(math.ceil((self.num_classes - 1) / 2.0)),
-                seq_length=seq_lens)
+             num_correct_chunks) = fluid.layers.chunk_eval(input=crf_decode,
+                                                           label=label_ids,
+                                                           chunk_scheme="IOB",
+                                                           num_chunk_types=int(math.ceil((self.num_classes - 1) / 2.0)),
+                                                           seq_length=seq_lens)
             chunk_evaluator = fluid.metrics.ChunkEvaluator()
             chunk_evaluator.reset()
 
             return {"loss": avg_cost}
         else:
-            return {"logits": emission} 
+            return {"logits": emission}
 
     def batch_postprocess(self, rt_outputs):
         if not self._is_training:
-            emission = rt_outputs['emission']
+            # emission = rt_outputs['emission']
+            # TODO：自行修改
+            emission = rt_outputs['logits']
             preds = np.argmax(emission, -1)
             self._preds.extend(preds.tolist())
 
@@ -121,6 +118,6 @@ class SequenceLabel(Head):
             if output_dir is not None:
                 with open(os.path.join(output_dir, 'predictions.json'), 'w') as writer:
                     for p in self._preds:
-                        writer.write(str(p)+'\n')
-                print('Predictions saved at '+os.path.join(output_dir, 'predictions.json'))
+                        writer.write(str(p) + '\n')
+                print('Predictions saved at ' + os.path.join(output_dir, 'predictions.json'))
             return self._preds
