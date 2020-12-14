@@ -23,15 +23,16 @@ import os
 
 if __name__ == '__main__':
     # configs
+    lr = 2e-5
     max_seqlen = 512
     batch_size = 4
     num_epochs = 3
-    lr = 2e-5
     weight_decay = 0.0
     num_classes = 24
     random_seed = 1
-    dropout_prob= 0.1
+    dropout_prob = 0.1
     print_steps = 5000
+    save_steps = 100000
 
     save_path = './outputs/'
     save_type = 'ckpt'
@@ -87,7 +88,6 @@ if __name__ == '__main__':
     trainer.load_pretrain(pre_params, False)
     # step 8-2*: set saver to save model
     # save_steps = n_steps-16
-    save_steps = 100000
     trainer.set_saver(save_path=save_path, save_steps=save_steps, save_type=save_type)
     # step 8-3: start training
     trainer.train(print_steps=print_steps)

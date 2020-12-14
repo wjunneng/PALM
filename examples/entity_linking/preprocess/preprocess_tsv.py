@@ -143,10 +143,10 @@ class DataFramePreprocessor:
                                     max_negs=self.train_max_negs)
         self.preprocess_entity_link(input_file_path=os.path.join(PATH.input_dev_json_path),
                                     output_file_path=os.path.join(PATH.OUTPUT_DIR, 'el_dev.tsv'),
-                                    max_negs=self.train_max_negs)
+                                    max_negs=self.dev_max_negs)
         self.preprocess_entity_link(input_file_path=os.path.join(PATH.input_test_json_path),
                                     output_file_path=os.path.join(PATH.OUTPUT_DIR, 'el_test.tsv'),
-                                    max_negs=self.train_max_negs)
+                                    max_negs=self.test_max_negs)
 
         self.preprocess_entity_type(input_file_path=os.path.join(PATH.input_train_json_path),
                                     output_file_path=os.path.join(PATH.OUTPUT_DIR, 'et_train.tsv'))

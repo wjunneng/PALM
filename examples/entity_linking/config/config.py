@@ -15,7 +15,6 @@ class PATH(object):
     # -*- input -*-
     INPUT_DIR = os.path.join(DATA_DIR, 'input')
     OUTPUT_DIR = os.path.join(DATA_DIR, 'output')
-    LOG_DIR = os.path.join(DATA_DIR, 'log')
     MODEL_DIR = os.path.join(DATA_DIR, 'model')
     SUBMIT_DIR = os.path.join(DATA_DIR, 'submit')
 

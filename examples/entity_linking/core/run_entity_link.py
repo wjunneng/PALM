@@ -23,16 +23,18 @@ import os
 
 if __name__ == '__main__':
     # configs
+    lr = 2e-5
     max_seqlen = 512
     batch_size = 4
     num_epochs = 3
-    lr = 2e-5
     weight_decay = 0.0
     num_classes = 2
     random_seed = 1
     dropout_prob = 0.1
-    save_type = 'ckpt'
     print_steps = 5000
+    save_steps = 130000
+
+    save_type = 'ckpt'
     task_name = 'Quora Question Pairs matching'
 
     save_path = PATH.MODEL_ENTITY_LINK_DIR
@@ -86,7 +88,6 @@ if __name__ == '__main__':
     trainer.load_pretrain(pre_params, False)
     # step 8-2*: set saver to save model
     # save_steps = n_steps-16
-    save_steps = 130000
     trainer.set_saver(save_path=save_path, save_steps=save_steps, save_type=save_type)
     # step 8-3: start training
     trainer.train(print_steps=print_steps)

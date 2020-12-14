@@ -69,7 +69,6 @@ class Submit(object):
         df = df[['text_id', 'entity', 'offset', 'short_text', 'kb_id', 'entity_link', 'entity_type']]
 
         df = pd.merge(df, df_, how='outer', on=['text_id', 'entity', 'offset', 'short_text', 'kb_id', 'entity_link', 'entity_type'])
-        df.to_csv('result_.csv', encoding='utf-8', index=None)
         df['text_id'] = df['text_id'].astype(int)
         df.sort_values(by=['text_id', 'offset'], inplace=True)
         df.reset_index(drop=True, inplace=True)

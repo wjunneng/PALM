@@ -20,20 +20,21 @@ seed_everything(seed=42)
 import paddlepalm as palm
 import json
 import os
+import shutil
 
 if __name__ == '__main__':
     # configs
     max_seqlen = 512
-    batch_size = 4
-    num_epochs = 3
+    batch_size = 16
     lr = 2e-5
-    weight_decay = 0.0
     num_classes = 24
     random_seed = 1
-    dropout_prob = 0.1
-    save_type = 'ckpt'
-    print_steps = 5000
+    print_steps = 100
     task_name = 'Quora Question Pairs matching'
+
+    # 模式
+    # mode = 'dev'
+    mode = 'test'
 
     pred_output = PATH.OUTPUT_ENTITY_TYPE_DIR
     save_path = PATH.MODEL_ENTITY_TYPE_DIR
@@ -41,8 +42,7 @@ if __name__ == '__main__':
     config_path = os.path.join(PATH.ERNIE_V2_CN_BASE_DIR, 'ernie_config.json')
     pre_params = os.path.join(PATH.ERNIE_V2_CN_BASE_DIR, 'params')
     train_file = os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, 'train.tsv')
-    # predict_file = os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, 'dev.tsv')
-    predict_file = os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, 'test.tsv')
+    predict_file = os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, mode + '.tsv')
 
     config = json.load(open(config_path))
     input_dim = config['hidden_size']
@@ -80,3 +80,8 @@ if __name__ == '__main__':
     # step 8: predict
     print('predicting..')
     trainer.predict(print_steps=print_steps, output_dir=pred_output)
+
+    shutil.copyfile(src=os.path.join(pred_output, 'predictions.json'),
+                    dst=os.path.join(pred_output, 'predictions_' + mode + '.json'))
+
+    os.remove(os.path.join(pred_output, 'predictions.json'))

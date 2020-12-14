@@ -99,12 +99,12 @@ class DataFramePreprocessor:
         result.to_csv(path_or_buf=output_file_path, sep='\t', encoding='utf-8', index=None)
 
     def main(self):
-        # self.preprocess_entity_link(input_file_path=os.path.join(PATH.OUTPUT_DIR, 'el_train.tsv'),
-        #                             output_file_path=os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'train.tsv'), )
-        # self.preprocess_entity_link(input_file_path=os.path.join(PATH.OUTPUT_DIR, 'el_dev.tsv'),
-        #                             output_file_path=os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'dev.tsv'), )
-        # self.preprocess_entity_link(input_file_path=os.path.join(PATH.OUTPUT_DIR, 'el_test.tsv'),
-        #                             output_file_path=os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'test.tsv'), )
+        self.preprocess_entity_link(input_file_path=os.path.join(PATH.OUTPUT_DIR, 'el_train.tsv'),
+                                    output_file_path=os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'train.tsv'), )
+        self.preprocess_entity_link(input_file_path=os.path.join(PATH.OUTPUT_DIR, 'el_dev.tsv'),
+                                    output_file_path=os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'dev.tsv'), )
+        self.preprocess_entity_link(input_file_path=os.path.join(PATH.OUTPUT_DIR, 'el_test.tsv'),
+                                    output_file_path=os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'test.tsv'), )
 
         self.preprocess_entity_type(input_file_path=os.path.join(PATH.OUTPUT_DIR, 'et_train.tsv'),
                                     output_file_path=os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, 'train.tsv'), )
