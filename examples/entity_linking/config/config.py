@@ -28,6 +28,17 @@ class PATH(object):
     input_dev_json_path = os.path.join(INPUT_DIR, 'dev.json')
     input_kb_json_path = os.path.join(INPUT_DIR, 'kb.json')
 
+    # -*- output -*-
+    OUTPUT_ENTITY_LINK_DIR = os.path.join(OUTPUT_DIR, 'entity_link')
+    OUTPUT_ENTITY_TYPE_DIR = os.path.join(OUTPUT_DIR, 'entity_type')
+
+    # -*- model -*-
+    MODEL_ENTITY_LINK_DIR = os.path.join(MODEL_DIR, 'entity_link')
+    MODEL_ENTITY_TYPE_DIR = os.path.join(MODEL_DIR, 'entity_type')
+
+    # ERNIE-v2-cn-base
+    ERNIE_V2_CN_BASE_DIR = os.path.join(project_dir, 'examples', 'pretrain', 'ERNIE-v1-zh-base')
+
 
 class CONFIG(object):
     PICKLE_DATA = {
