@@ -41,7 +41,8 @@ if __name__ == '__main__':
     config_path = os.path.join(PATH.ERNIE_V2_CN_BASE_DIR, 'ernie_config.json')
     pre_params = os.path.join(PATH.ERNIE_V2_CN_BASE_DIR, 'params')
     train_file = os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, 'train.tsv')
-    predict_file = os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, 'dev.tsv')
+    # predict_file = os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, 'dev.tsv')
+    predict_file = os.path.join(PATH.OUTPUT_ENTITY_TYPE_DIR, 'test.tsv')
 
     config = json.load(open(config_path))
     input_dim = config['hidden_size']

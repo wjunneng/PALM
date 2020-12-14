@@ -30,12 +30,11 @@ if __name__ == '__main__':
     weight_decay = 0.0
     num_classes = 24
     random_seed = 1
-    dropout_prob\
-        = 0.1
+    dropout_prob= 0.1
+    print_steps = 5000
+
     save_path = './outputs/'
     save_type = 'ckpt'
-    pred_model_path = './outputs/ckpt.step' + str(133833)
-    print_steps = 5000
     pred_output = './outputs/predict/'
     task_name = 'Quora Question Pairs matching'
 
@@ -88,37 +87,7 @@ if __name__ == '__main__':
     trainer.load_pretrain(pre_params, False)
     # step 8-2*: set saver to save model
     # save_steps = n_steps-16
-    save_steps = 50000
+    save_steps = 100000
     trainer.set_saver(save_path=save_path, save_steps=save_steps, save_type=save_type)
     # step 8-3: start training
     trainer.train(print_steps=print_steps)
-
-    # -----------------------  for prediction ----------------------- 
-
-    # step 1-1: create readers for prediction
-    print('prepare to predict...')
-    predict_match_reader = palm.reader.MatchReader(vocab_path, max_seqlen, seed=random_seed, phase='predict')
-    # step 1-2: load the training data
-    predict_match_reader.load_data(predict_file, batch_size)
-
-    # step 2: create a backbone of the model to extract text features
-    pred_ernie = palm.backbone.ERNIE.from_config(config, phase='predict')
-
-    # step 3: register the backbone in reader
-    predict_match_reader.register_with(pred_ernie)
-
-    # step 4: create the task output head
-    match_pred_head = palm.head.Match(num_classes, input_dim, phase='predict')
-
-    # step 5: build forward graph with backbone and task head
-    trainer.build_predict_forward(pred_ernie, match_pred_head)
-
-    # step 6: load checkpoint
-    trainer.load_ckpt(pred_model_path)
-
-    # step 7: fit prepared reader and data
-    trainer.fit_reader(predict_match_reader, phase='predict')
-
-    # step 8: predict
-    print('predicting..')
-    trainer.predict(print_steps=print_steps, output_dir=pred_output)

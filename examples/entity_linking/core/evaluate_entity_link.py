@@ -39,11 +39,11 @@ def pre_recall_f1(preds, labels):
     return p, r, f1
 
 
-def res_evaluate(res_dir="/home/wjunneng/Ubuntu/NLP/2020_12/PALM/outputs/predict/predictions.json", eval_phase='dev'):
+def res_evaluate(res_dir="", eval_phase=""):
     if eval_phase == 'test':
-        data_dir = "/home/wjunneng/Ubuntu/NLP/2020_12/PALM/examples/entity_linking/data/output/entity_link/test.tsv"
+        data_dir = os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'test.tsv')
     elif eval_phase == 'dev':
-        data_dir = "/home/wjunneng/Ubuntu/NLP/2020_12/PALM/examples/entity_linking/data/output/entity_link/dev.tsv"
+        data_dir = os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'dev.tsv')
     else:
         assert eval_phase in ['dev', 'test'], 'eval_phase should be dev or test'
 
@@ -72,4 +72,7 @@ def res_evaluate(res_dir="/home/wjunneng/Ubuntu/NLP/2020_12/PALM/outputs/predict
     print("accuracy: {:.4f}, precision: {:.4f}, recall: {:.4f}, f1: {:.4f}".format(accuracy(preds, labels), p, r, f1))
 
 
-res_evaluate()
+predictions_test_json_path = os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'predictions_test.json')
+predictions_dev_json_path = os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'predictions_dev.json')
+
+res_evaluate(res_dir=predictions_dev_json_path, eval_phase='dev')
