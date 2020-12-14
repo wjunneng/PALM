@@ -57,8 +57,23 @@ class Submit(object):
             {value: key for (key, value) in CONFIG.PICKLE_DATA['TYPE_TO_IDX'].items()})
 
         df = entity_link_df.merge(entity_type_df, on=('text_id', 'offset'), how='outer', suffixes=('', '_et'))
-        df = df[['text_id', 'entity', 'offset', 'short_text', 'kb_id', 'entity_link', 'entity_type']]
+
+        df_ = df.iloc[entity_link_df.shape[0]:]
+        df_['entity'] = df_['entity_et']
+        df_['short_text'] = df_['short_text_et']
+        df_ = df_[['text_id', 'entity', 'offset', 'short_text', 'kb_id', 'entity_link', 'entity_type']]
+        df_['kb_id'] = -1
+        df_['entity_link'] = 0
+
         df = df.loc[:entity_link_df.shape[0] - 1]
+        df = df[['text_id', 'entity', 'offset', 'short_text', 'kb_id', 'entity_link', 'entity_type']]
+
+        df = pd.merge(df, df_, how='outer', on=['text_id', 'entity', 'offset', 'short_text', 'kb_id', 'entity_link', 'entity_type'])
+        df.to_csv('result_.csv', encoding='utf-8', index=None)
+        df['text_id'] = df['text_id'].astype(int)
+        df.sort_values(by=['text_id', 'offset'], inplace=True)
+        df.reset_index(drop=True, inplace=True)
+
         df['entity_link'] = df['entity_link'].astype(int)
         df['kb_id'] = df['kb_id'].astype(int)
 
@@ -74,10 +89,14 @@ class Submit(object):
 
                 offset_df.sort_values(by=['entity_link'], ascending=False, inplace=True)
 
+                if offset_df.shape[0] >= 3:
+                    print(offset_df)
+
                 if int(offset_df.iloc[0, -2]) == 1:
                     mention_sample_dict['kb_id'] = str(offset_df.iloc[0, 4])
-                else:
+                elif int(offset_df.iloc[0, -2]) == 0:
                     mention_sample_dict['kb_id'] = 'NIL_' + str(offset_df.iloc[0, -1])
+                assert int(offset_df.iloc[0, -2]) in [0, 1]
 
                 mention_sample_dict['mention'] = offset_df.iloc[0, 1]
                 mention_sample_dict['offset'] = str(offset_int)
@@ -101,8 +120,6 @@ class Submit(object):
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Submit...')
-    # parser.add_argument('--')
-
     args = parser.parse_args()
 
     Submit(args=args).main()
