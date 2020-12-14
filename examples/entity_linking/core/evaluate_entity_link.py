@@ -72,7 +72,8 @@ def res_evaluate(res_dir="", eval_phase=""):
     print("accuracy: {:.4f}, precision: {:.4f}, recall: {:.4f}, f1: {:.4f}".format(accuracy(preds, labels), p, r, f1))
 
 
-predictions_test_json_path = os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'predictions_test.json')
-predictions_dev_json_path = os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'predictions_dev.json')
+if __name__ == '__main__':
+    predictions_test_json_path = os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'predictions_test.json')
+    predictions_dev_json_path = os.path.join(PATH.OUTPUT_ENTITY_LINK_DIR, 'predictions_dev.json')
 
-res_evaluate(res_dir=predictions_dev_json_path, eval_phase='dev')
+    res_evaluate(res_dir=predictions_dev_json_path, eval_phase='dev')
