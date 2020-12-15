@@ -115,13 +115,14 @@ class Submit(object):
 
                 if sum(offset_df['entity_link'].tolist()) >= 2:
                     count += 1
-                    print(offset_df)
 
                 # entity_link
                 if int(offset_df.iloc[0, 5]) in [1]:
                     # kb_id
                     mention_sample_dict['kb_id'] = str(offset_df.iloc[0, 4])
                 elif int(offset_df.iloc[0, 5]) in [0]:
+                    if len(set(offset_df['entity_type'].tolist())) >= 2:
+                        offset_df.sort_values(by=['entity_type_prob'], ascending=False, inplace=True)
                     # entity_type
                     mention_sample_dict['kb_id'] = 'NIL_' + str(offset_df.iloc[0, 6])
                 assert int(offset_df.iloc[0, 5]) in [0, 1]
